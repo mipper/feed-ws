@@ -9,6 +9,10 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 
 
+/**
+ * Service which uses a FileSelector to select a file which should be used in
+ * some operation.  The selected file should be of the given type.
+ */
 public class FileSelectorResourceService
     implements
         ResourceService
@@ -31,6 +35,7 @@ public class FileSelectorResourceService
         if ( null == selected )
         {
             _log.info ( "Could not find matching file using {}", _selector );
+            return new ResourceRecord ( null, _type );
         }
         return new ResourceRecord ( new FileSystemResource ( selected ),
                                     _type );

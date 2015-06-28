@@ -1,10 +1,16 @@
 package org.mipper.feedws;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.mipper.feedws.controller.FileResourceController;
+import org.mipper.feedws.service.FileSelectorResourceService;
+import org.mipper.feedws.service.LatestFileSelector;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 
@@ -23,6 +29,23 @@ public class FeedWebServiceApplication
     @Bean
     public FileResourceController fileResourceController ()
     {
-        return new FileResourceController ( "./src/test/resources/data" );
+        final Path pwd = Paths.get ( "./src/test/resources/data" ) .toAbsolutePath () .normalize ();
+        final FileResourceController res = new FileResourceController ();
+        res.addResourceService ( "restricted",
+                                 new FileSelectorResourceService ( new LatestFileSelector ( pwd.resolve ( "restricted" )
+                                                                                               .toFile (),
+                                                                                            "list-\\d{8}-\\d{6}.csv" ),
+                                                                   MediaType.TEXT_PLAIN ) ) ;
+        res.addResourceService ( "html",
+                                 new FileSelectorResourceService ( new LatestFileSelector ( pwd.resolve ( "html" )
+                                                                                               .toFile (),
+                                                                                            ".*\\.html" ),
+                                                                   MediaType.TEXT_HTML ) );
+        res.addResourceService ( "empty",
+                                 new FileSelectorResourceService ( new LatestFileSelector ( pwd.resolve ( "empty" )
+                                                                                               .toFile (),
+                                                                                            ".*\\.html" ),
+                                                                   MediaType.TEXT_HTML ) );
+        return res;
     }
 }
