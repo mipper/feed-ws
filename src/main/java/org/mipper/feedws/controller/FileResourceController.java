@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.mipper.feedws.service.ResourceRecord;
 import org.mipper.feedws.service.ResourceService;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +25,7 @@ public class FileResourceController
 
 
     @RequestMapping(value="/file/{type}", produces="application/html")
-    public ResponseEntity<Resource> fileResource ( @PathVariable String type )
+    public ResponseEntity<?> fileResource ( @PathVariable String type )
         throws
             IOException
     {
@@ -35,6 +34,10 @@ public class FileResourceController
         headers.add ( "Pragma", "no-cache" );
         headers.add ( "Expires", "0" );
         final ResourceRecord res = getResourceService ( type ).getResource ();
+        if ( null == res.getResource () )
+        {
+            return ResponseEntity.notFound ().build ();
+        }
         return ResponseEntity.ok ()
                              .headers ( headers )
                              .contentLength ( res.getResource ().contentLength () )
