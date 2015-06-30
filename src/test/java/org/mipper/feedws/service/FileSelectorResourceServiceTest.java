@@ -2,6 +2,7 @@ package org.mipper.feedws.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,12 +44,33 @@ public class FileSelectorResourceServiceTest
         throws
             IOException
     {
-        Mockito.when ( selector.select () ).thenReturn ( new File ( "/hello/world.txt" ) );
+        Mockito.when ( selector.select () )
+               .thenReturn ( new File ( "/hello/world.txt" ) );
 
         final ResourceRecord res = fileSelectorResourceService.getResource ();
         assertEquals ( "/hello/world.txt",
                        res.getResource ().getFile ().getAbsolutePath () );
         assertEquals ( type, res.getMediaType () );
+    }
+
+
+    @Test
+    public void testGetResourceException ()
+        throws
+            IOException
+    {
+        Mockito.when ( selector.select () )
+               .thenThrow ( new IOException ( "The exception." ) );
+
+        try
+        {
+            fileSelectorResourceService.getResource ();
+            fail ( "Expected IOException" );
+        }
+        catch ( final IOException e )
+        {
+            // As expected
+        }
     }
 
 }

@@ -38,17 +38,17 @@ public class FeedWebServiceApplication
         res.addResourceService ( "restricted",
                                  new FileSelectorResourceService ( new LatestFileSelector ( pwd.resolve ( "restricted" )
                                                                                                .toFile (),
-                                                                                            "list-\\d{8}-\\d{6}.csv" ),
+                                                                                            ( dir, name ) -> name.matches ( "list-\\d{8}-\\d{6}.csv" ) ),
                                                                    MediaType.TEXT_PLAIN ) ) ;
         res.addResourceService ( "html",
                                  new FileSelectorResourceService ( new LatestFileSelector ( pwd.resolve ( "html" )
                                                                                                .toFile (),
-                                                                                            ".*\\.html" ),
+                                                                                            ( dir, name ) -> name.matches ( ".*\\.html" ) ),
                                                                    MediaType.TEXT_HTML ) );
         res.addResourceService ( "empty",
                                  new FileSelectorResourceService ( new LatestFileSelector ( pwd.resolve ( "empty" )
                                                                                                .toFile (),
-                                                                                            ".*\\.html" ),
+                                                                                            ( dir, name ) -> name.matches ( ".*\\.html" ) ),
                                                                    MediaType.TEXT_HTML ) );
         return res;
     }

@@ -14,11 +14,11 @@ public class LatestFileSelector
         FileSelector
 {
 
-    public LatestFileSelector ( File root, String pattern )
+    public LatestFileSelector ( File root, FilenameFilter filter )
     {
         _root = root;
-        _pattern = pattern;
-        _log.info ( "Root: {}, Pattern: {}", _root, _pattern );
+        _filter = filter;
+        _log.info ( "Root: {}, Filter: {}", _root, _filter );
     }
 
 
@@ -27,11 +27,7 @@ public class LatestFileSelector
         throws
             IOException
     {
-        final File[] matches = _root.listFiles ( ( FilenameFilter ) ( dir, name ) ->
-                {
-                    _log.debug ( "Checking if {} matches.", name );
-                    return name.matches ( _pattern );
-                } );
+        final File[] matches = _root.listFiles ( _filter );
         if ( null == matches || matches.length == 0 )
         {
             return null;
@@ -39,14 +35,7 @@ public class LatestFileSelector
         File res = matches[0];
         for ( final File f: matches )
         {
-            if ( res == null )
-            {
-                res = f;
-            }
-            else
-            {
-                res = getLatest ( res, f );
-            }
+            res = getLatest ( res, f );
         }
         return res;
     }
@@ -57,7 +46,7 @@ public class LatestFileSelector
     {
         return String.format ( "LatestFileSelector with root: %s and pattern: %s",
                                _root,
-                               _pattern );
+                               _filter );
     }
 
 
@@ -73,6 +62,6 @@ public class LatestFileSelector
 
     private final static Logger _log = LoggerFactory.getLogger ( LatestFileSelector.class );
     private final File _root;
-    private final String _pattern;
+    private final FilenameFilter _filter;
 
 }
